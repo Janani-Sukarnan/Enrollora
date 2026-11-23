@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, signal, computed, ChangeDetectionStrategy  } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { StudentService } from '../student.service';
 import { StudentResponse, StudentFilter, UpdateStudentRequest } from '../student.models';
@@ -12,15 +12,18 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
   imports: [DatePipe, DecimalPipe, FormsModule, ReactiveFormsModule],
   templateUrl: './student-list.html',
   styleUrl: './student-list.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StudentList implements OnInit {
   private studentService = inject(StudentService);
   private cdr = inject(ChangeDetectorRef);
 
-  students: StudentResponse[] = [];
+  students = signal<StudentResponse[]>([]);
 
-  isLoading = false;
-  errorMessage = '';
+isLoading = signal(false);
+errorMessage = signal('');
+
+displayedStudentCount = computed(() => this.students().length);
 
   pageNumber = 1;
   pageSize = 5;
@@ -46,28 +49,32 @@ export class StudentList implements OnInit {
   }
 
   loadStudents(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
+  this.isLoading.set(true);
+  this.errorMessage.set('');
 
-    this.studentService.getStudents(this.pageNumber, this.pageSize, this.filters).subscribe({
+  this.studentService
+    .getStudents(this.pageNumber, this.pageSize, this.filters)
+    .subscribe({
       next: (response) => {
-        this.students = response.items;
+        this.students.set(response.items);
         this.totalRecords = response.totalRecords;
         this.totalPages = response.totalPages;
         this.pageNumber = response.pageNumber;
         this.pageSize = response.pageSize;
-        this.isLoading = false;
+
+        this.isLoading.set(false);
         this.cdr.markForCheck();
       },
 
       error: (error) => {
         console.error('Failed to load students:', error);
-        this.errorMessage = 'Unable to load students.';
-        this.isLoading = false;
+
+        this.errorMessage.set('Unable to load students.');
+        this.isLoading.set(false);
         this.cdr.markForCheck();
       },
     });
-  }
+}
 
   approveStudent(id: number): void {
     if (!confirm('Are you sure you want to approve this student?')) {
