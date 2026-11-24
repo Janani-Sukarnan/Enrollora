@@ -43,6 +43,13 @@ export class StudentService {
 
       if (filters.maxCgpa !== null && filters.maxCgpa !== undefined)
         params = params.set('maxCgpa', filters.maxCgpa);
+      if (filters.sortBy) {
+  params = params.set('sortBy', filters.sortBy);
+}
+
+if (filters.sortOrder) {
+  params = params.set('sortOrder', filters.sortOrder);
+}
     }
 
     return this.http.get<PagedResult<StudentResponse>>(this.apiUrl, { params });

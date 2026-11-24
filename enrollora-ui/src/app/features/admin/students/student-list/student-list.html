@@ -1,3 +1,4 @@
+=
 <div class="students-page">
   <div class="page-heading">
     <div>
@@ -6,9 +7,9 @@
     </div>
 
     <div class="student-count">
-  Total Students: {{ totalRecords }}
-  <small> | Displayed: {{ displayedStudentCount() }}</small>
-</div>
+      Total Students: {{ totalRecords }}
+      <small> | Displayed: {{ displayedStudentCount() }}</small>
+    </div>
   </div>
 
   @if (isLoading()) {
@@ -23,6 +24,7 @@
     </div>
   } @else {
     <div class="table-card">
+
       <!-- Student Filters -->
       <div class="student-filter-card">
         <div class="filter-header">
@@ -34,6 +36,7 @@
         </div>
 
         <div class="row g-3">
+
           <!-- Search -->
           <div class="col-lg-4 col-md-6">
             <label class="form-label">Search</label>
@@ -61,10 +64,10 @@
             <label class="form-label">Department</label>
             <select class="form-select" [(ngModel)]="filters.department">
               <option value="">All Departments</option>
-              <option value="CSE">CSE</option>
-              <option value="ECE">ECE</option>
-              <option value="EEE">EEE</option>
-              <option value="IT">IT</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Electronics and Communication">Electronics and Communication</option>
+              <option value="Electrical and Electronics">Electrical and Electronics</option>
+              <option value="Information Technology">Information Technology</option>
               <option value="Mechanical">Mechanical</option>
             </select>
           </div>
@@ -112,10 +115,39 @@
               />
             </div>
           </div>
+
         </div>
 
+        <!-- Sorting Controls -->
+        <div class="row g-3 mt-1">
+
+          <!-- Sort By -->
+          <div class="col-lg-3 col-md-6">
+            <label class="form-label">Sort By</label>
+            <select class="form-select" [(ngModel)]="filters.sortBy">
+              <option value="registeredAt">Registration Date</option>
+              <option value="name">Student Name</option>
+              <option value="age">Age</option>
+              <option value="cgpa">CGPA</option>
+            </select>
+          </div>
+
+          <!-- Sort Order -->
+          <div class="col-lg-3 col-md-6">
+            <label class="form-label">Sort Order</label>
+            <select class="form-select" [(ngModel)]="filters.sortOrder">
+              <option value="desc">Descending</option>
+              <option value="asc">Ascending</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Filter Buttons -->
         <div class="filter-footer">
-          <button class="btn btn-apply" (click)="applyFilters()">Apply Filters</button>
+          <button class="btn btn-apply" (click)="applyFilters()">
+            Apply Filters
+          </button>
 
           <button class="btn btn-reset" (click)="clearFilters()">
             <i class="bi bi-arrow-counterclockwise"></i>
@@ -266,7 +298,9 @@
           Previous
         </button>
 
-        <span class="page-indicator"> Page {{ pageNumber }} of {{ totalPages }} </span>
+        <span class="page-indicator">
+          Page {{ pageNumber }} of {{ totalPages }}
+        </span>
 
         <button
           class="btn btn-outline-primary btn-sm"
@@ -284,6 +318,7 @@
 @if (selectedStudent || isDetailsLoading || detailsError) {
   <div class="student-modal-backdrop">
     <div class="student-modal">
+
       <!-- Modal Header -->
       <div class="student-modal-header">
         <div>
@@ -320,6 +355,7 @@
       <!-- Student Information -->
       @else if (selectedStudent) {
         <div class="student-modal-body">
+
           <!-- Profile -->
           <div class="profile-section">
             <div class="profile-avatar">
@@ -329,6 +365,7 @@
             <div class="profile-info">
               <h2>{{ selectedStudent.name }}</h2>
               <p>{{ selectedStudent.email }}</p>
+
               <span
                 class="profile-status"
                 [class.pending]="selectedStudent.status === 0"
@@ -398,7 +435,9 @@
 
         <!-- Footer -->
         <div class="student-modal-footer">
-          <button class="btn-close-modal" (click)="selectedStudent = null">Close Profile</button>
+          <button class="btn-close-modal" (click)="selectedStudent = null">
+            Close Profile
+          </button>
         </div>
       }
     </div>
@@ -409,6 +448,7 @@
 @if (isEditModalOpen) {
   <div class="student-modal-backdrop">
     <div class="student-modal">
+
       <div class="student-modal-header">
         <div>
           <span class="modal-eyebrow">STUDENT MANAGEMENT</span>
@@ -416,45 +456,98 @@
           <p>Update student information</p>
         </div>
 
-        <button type="button" class="modal-close" (click)="closeEditModal()">&times;</button>
+        <button
+          type="button"
+          class="modal-close"
+          (click)="closeEditModal()"
+        >
+          &times;
+        </button>
       </div>
 
       <div class="student-modal-body">
         <form [formGroup]="studentForm" (ngSubmit)="updateStudent()">
-          <div class="mb-3">
-            <label class="form-label">Student Name</label>
-            <input type="text" class="form-control" formControlName="name" />
-          </div>
 
           <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" formControlName="email" />
-          </div>
+  <label class="form-label">Student Name</label>
+  <input
+    type="text"
+    class="form-control"
+    [class.is-invalid]="studentForm.get('name')?.invalid && studentForm.get('name')?.touched"
+    formControlName="name"
+  />
+
+  @if (studentForm.get('name')?.hasError('required') && studentForm.get('name')?.touched) {
+    <div class="text-danger small mt-1">
+      Student name is required.
+    </div>
+  }
+</div>
+
+          <div class="mb-3">
+  <label class="form-label">Department</label>
+  <input
+    type="text"
+    class="form-control"
+    [class.is-invalid]="studentForm.get('department')?.invalid && studentForm.get('department')?.touched"
+    formControlName="department"
+  />
+
+  @if (studentForm.get('department')?.hasError('required') && studentForm.get('department')?.touched) {
+    <div class="text-danger small mt-1">
+      Department is required.
+    </div>
+  }
+</div>
 
           <div class="mb-3">
             <label class="form-label">Department</label>
-            <input type="text" class="form-control" formControlName="department" />
+            <input
+              type="text"
+              class="form-control"
+              formControlName="department"
+            />
           </div>
 
           <div class="row">
             <div class="col-6 mb-3">
               <label class="form-label">Age</label>
-              <input type="number" class="form-control" formControlName="age" />
+              <input
+                type="number"
+                class="form-control"
+                formControlName="age"
+              />
             </div>
 
             <div class="col-6 mb-3">
               <label class="form-label">CGPA</label>
-              <input type="number" class="form-control" step="0.01" formControlName="cgpa" />
+              <input
+                type="number"
+                class="form-control"
+                step="0.01"
+                formControlName="cgpa"
+              />
             </div>
           </div>
 
           <div class="student-modal-footer">
-            <button type="button" class="btn btn-light" (click)="closeEditModal()">Cancel</button>
+            <button
+              type="button"
+              class="btn btn-light"
+              (click)="closeEditModal()"
+            >
+              Cancel
+            </button>
 
-            <button type="submit" class="btn-close-modal" [disabled]="studentForm.invalid">
+            <button
+              type="submit"
+              class="btn-close-modal"
+              [disabled]="studentForm.invalid"
+            >
               Update Student
             </button>
           </div>
+
         </form>
       </div>
     </div>

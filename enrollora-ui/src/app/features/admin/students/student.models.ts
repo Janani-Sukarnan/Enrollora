@@ -18,6 +18,8 @@ export interface StudentFilter {
   maxAge?: number | null;
   minCgpa?: number | null;
   maxCgpa?: number | null;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface UpdateStudentRequest {

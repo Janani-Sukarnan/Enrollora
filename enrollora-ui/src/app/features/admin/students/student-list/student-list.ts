@@ -42,6 +42,8 @@ displayedStudentCount = computed(() => this.students().length);
     maxAge: null,
     minCgpa: null,
     maxCgpa: null,
+    sortBy: 'registeredAt',
+    sortOrder: 'desc',
   };
 
   ngOnInit(): void {
