@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CourseService } from '../course.service';
-import { CourseResponse } from '../course.models';
+import { CourseResponse, CourseFilter } from '../course.models';
 
 @Component({
   selector: 'app-course-list',
@@ -28,6 +28,19 @@ export class CourseListComponent implements OnInit {
   totalRecords = signal(0);
   totalPages = signal(0);
 
+  // Search and filters
+  filterForm = this.fb.nonNullable.group({
+    search: [''],
+    status: ['all'],
+    availability: [''],
+    minFees: [''],
+    maxFees: [''],
+    minCapacity: [''],
+    maxCapacity: [''],
+    sortBy: ['name'],
+    sortOrder: ['asc'],
+  });
+
   // Add and Edit form
   showCourseForm = signal(false);
   isEditMode = signal(false);
@@ -39,7 +52,7 @@ export class CourseListComponent implements OnInit {
   actionError = signal('');
   deactivatingCourseId = signal<number | null>(null);
 
-  // Reactive form
+  // Reactive course form
   courseForm = this.fb.nonNullable.group({
     courseName: ['', [Validators.required, Validators.maxLength(150)]],
     duration: ['', [Validators.required, Validators.maxLength(80)]],
@@ -52,13 +65,47 @@ export class CourseListComponent implements OnInit {
     this.loadCourses();
   }
 
-  // GET: Load courses
+  // Convert filter form values into API filter parameters
+  private buildCourseFilters(): CourseFilter {
+    const values = this.filterForm.getRawValue();
+
+    return {
+      search: values.search.trim() || undefined,
+
+      isActive:
+        values.status === 'all'
+          ? null
+          : values.status === 'true',
+
+      availability: values.availability || undefined,
+
+      minFees:
+        values.minFees === '' ? null : Number(values.minFees),
+
+      maxFees:
+        values.maxFees === '' ? null : Number(values.maxFees),
+
+      minCapacity:
+        values.minCapacity === '' ? null : Number(values.minCapacity),
+
+      maxCapacity:
+        values.maxCapacity === '' ? null : Number(values.maxCapacity),
+      sortBy: values.sortBy,
+      sortOrder: values.sortOrder,
+    };
+  }
+
+  // GET: Load courses with applied filters
   loadCourses(): void {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
     this.courseService
-      .getCourses(this.pageNumber(), this.pageSize())
+      .getCourses(
+        this.pageNumber(),
+        this.pageSize(),
+        this.buildCourseFilters()
+      )
       .subscribe({
         next: (response) => {
           this.courses.set(response.items);
@@ -72,6 +119,30 @@ export class CourseListComponent implements OnInit {
           this.isLoading.set(false);
         },
       });
+  }
+
+  // Apply search and filters
+  applyFilters(): void {
+    this.pageNumber.set(1);
+    this.loadCourses();
+  }
+
+  // Reset all search and filter fields
+  resetFilters(): void {
+    this.filterForm.reset({
+      search: '',
+      status: 'all',
+      availability: '',
+      minFees: '',
+      maxFees: '',
+      minCapacity: '',
+      maxCapacity: '',
+      sortBy: 'name',
+      sortOrder: 'asc',
+    });
+
+    this.pageNumber.set(1);
+    this.loadCourses();
   }
 
   // Open form for adding a new course

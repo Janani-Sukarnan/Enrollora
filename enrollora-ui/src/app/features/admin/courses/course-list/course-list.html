@@ -168,6 +168,124 @@
 
   </div>
 
+  <!-- Search and Filters -->
+  <div class="course-filter-card">
+    <div class="filter-heading">
+      <div>
+        <h2>Search & Filter Courses</h2>
+        <p>Find courses using the options below.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+
+      <div class="filter-grid">
+
+        <div class="filter-field">
+          <label for="courseSearch">Course Name</label>
+          <input
+            id="courseSearch"
+            type="text"
+            formControlName="search"
+            placeholder="Search by course name">
+        </div>
+
+        <div class="filter-field">
+          <label for="courseStatus">Course Status</label>
+          <select id="courseStatus" formControlName="status">
+            <option value="all">All Courses</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="courseAvailability">Seat Availability</label>
+          <select
+            id="courseAvailability"
+            formControlName="availability">
+            <option value="">All Availability</option>
+            <option value="available">Seats Available</option>
+            <option value="full">Full Courses</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="minFees">Minimum Fees (₹)</label>
+          <input
+            id="minFees"
+            type="number"
+            min="0"
+            formControlName="minFees"
+            placeholder="Minimum">
+        </div>
+
+        <div class="filter-field">
+          <label for="maxFees">Maximum Fees (₹)</label>
+          <input
+            id="maxFees"
+            type="number"
+            min="0"
+            formControlName="maxFees"
+            placeholder="Maximum">
+        </div>
+
+        <div class="filter-field">
+          <label for="minCapacity">Minimum Capacity</label>
+          <input
+            id="minCapacity"
+            type="number"
+            min="1"
+            formControlName="minCapacity"
+            placeholder="Minimum">
+        </div>
+
+        <div class="filter-field">
+          <label for="maxCapacity">Maximum Capacity</label>
+          <input
+            id="maxCapacity"
+            type="number"
+            min="1"
+            formControlName="maxCapacity"
+            placeholder="Maximum">
+        </div>
+
+        <div class="filter-field">
+          <label for="sortBy">Sort By</label>
+          <select id="sortBy" formControlName="sortBy">
+            <option value="name">Course Name</option>
+            <option value="fees">Fees</option>
+            <option value="duration">Duration</option>
+            <option value="capacity">Capacity</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="sortOrder">Sort Order</label>
+          <select id="sortOrder" formControlName="sortOrder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="btn-apply-filter">
+          Apply Filters
+        </button>
+
+        <button
+          type="button"
+          class="btn-reset-filter"
+          (click)="resetFilters()">
+          Reset
+        </button>
+      </div>
+
+    </form>
+  </div>
+
   <!-- Course Table -->
   <div class="table-card">
 

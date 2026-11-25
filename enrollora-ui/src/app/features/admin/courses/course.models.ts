@@ -27,6 +27,8 @@ export interface CourseFilter {
   maxFees?: number | null;
   minCapacity?: number | null;
   maxCapacity?: number | null;
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 export type CoursePagedResult = PagedResult<CourseResponse>;
