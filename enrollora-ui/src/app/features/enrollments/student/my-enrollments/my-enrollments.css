@@ -1,3 +1,4 @@
+
 .enrollment-page {
   padding: 28px;
   min-height: calc(100vh - 84px);
@@ -27,6 +28,8 @@
   font-size: 14px;
   margin: 0;
 }
+
+/* Loading, empty and error states */
 
 .state-card {
   min-height: 280px;
@@ -69,6 +72,7 @@
   background: #8b5cf6;
   color: #fff;
   font-weight: 750;
+  cursor: pointer;
 }
 
 .loader {
@@ -81,8 +85,28 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
+
+/* Success message */
+
+.message {
+  padding: 13px 16px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.success-message {
+  background: #e9f8ef;
+  color: #16834a;
+  border: 1px solid #c8ecd5;
+}
+
+/* Enrollment table */
 
 .table-card {
   background: #fff;
@@ -99,7 +123,7 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
+  min-width: 850px;
 }
 
 thead {
@@ -120,6 +144,7 @@ td {
   border-top: 1px solid #f2f0f5;
   color: #625b70;
   font-size: 13px;
+  vertical-align: middle;
 }
 
 .course-info {
@@ -137,6 +162,7 @@ td {
   background: linear-gradient(135deg, #eee5ff, #fce7f3);
   color: #8753d9;
   font-weight: 800;
+  flex-shrink: 0;
 }
 
 .course-info strong {
@@ -150,12 +176,15 @@ td {
   margin-top: 4px;
 }
 
+/* Status badges */
+
 .status-badge {
   display: inline-block;
   padding: 6px 11px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .status-badge.active {
@@ -167,6 +196,176 @@ td {
   background: #fff0e9;
   color: #dc6541;
 }
+
+.status-badge.pending {
+  background: #fff6df;
+  color: #a66b00;
+}
+
+.status-badge.approved {
+  background: #e9f8ef;
+  color: #16834a;
+}
+
+.status-badge.rejected {
+  background: #fff0f0;
+  color: #c24141;
+}
+
+/* Cancellation request details */
+
+.request-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+}
+
+.admin-remarks {
+  max-width: 200px;
+  color: #898397;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.not-available {
+  color: #a09aac;
+  font-size: 12px;
+}
+
+/* Cancellation button */
+
+.cancel-request-btn {
+  margin-top: 5px;
+  border: 1px solid #e5d8ff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: #f6f1ff;
+  color: #8050d8;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.cancel-request-btn:hover {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+  color: #fff;
+}
+
+/* Cancellation form */
+
+.form-row td {
+  padding: 0;
+  background: #fcfbff;
+}
+
+.cancellation-form {
+  padding: 22px 24px;
+  border-top: 1px solid #eee8fa;
+}
+
+.cancellation-form h3 {
+  margin: 0 0 8px;
+  color: #342c47;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.cancellation-form > p {
+  margin: 0 0 16px;
+  color: #898397;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.cancellation-form label {
+  display: block;
+  margin-bottom: 7px;
+  color: #514761;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.cancellation-form textarea {
+  display: block;
+  width: 100%;
+  max-width: 650px;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid #e5dfef;
+  border-radius: 9px;
+  outline: none;
+  resize: vertical;
+  color: #342c47;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+}
+
+.cancellation-form textarea:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.character-count {
+  max-width: 650px;
+  margin-top: 5px;
+  text-align: right;
+  color: #a09aac;
+  font-size: 11px;
+}
+
+.form-error {
+  margin: 10px 0 !important;
+  color: #c24141 !important;
+  font-size: 12px !important;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.submit-request-btn,
+.close-form-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.submit-request-btn {
+  background: #8b5cf6;
+  color: #fff;
+}
+
+.submit-request-btn:hover {
+  background: #7543dc;
+}
+
+.close-form-btn {
+  background: #f0edf5;
+  color: #625b70;
+}
+
+.submit-request-btn:disabled,
+.close-form-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.load-request-error {
+  margin-top: 12px;
+  color: #c24141;
+  font-size: 12px;
+}
+
+/* Pagination */
 
 .pagination {
   display: flex;
@@ -193,6 +392,7 @@ td {
   border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
+  cursor: pointer;
 }
 
 .pagination button:disabled {
@@ -209,6 +409,8 @@ td {
   font-weight: 800;
 }
 
+/* Responsive layout */
+
 @media (max-width: 700px) {
   .enrollment-page {
     padding: 16px;
@@ -217,5 +419,13 @@ td {
   .pagination {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .cancellation-form {
+    padding: 18px 14px;
+  }
+
+  .form-actions {
+    flex-wrap: wrap;
   }
 }

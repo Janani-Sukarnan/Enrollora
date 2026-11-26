@@ -42,6 +42,15 @@ export const routes: Routes = [
             (m) => m.EnrollmentListComponent,
           ),
       },
+
+{
+  path: 'cancellation-requests',
+  loadComponent: () =>
+    import(
+      './features/enrollments/admin/cancellation-requests/cancellation-requests'
+    ).then((m) => m.CancellationRequestsComponent),
+},
+
     ],
   },
   {

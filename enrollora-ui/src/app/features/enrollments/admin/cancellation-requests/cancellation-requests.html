@@ -1,0 +1,329 @@
+
+<div class="cancellation-page">
+  <div class="page-header">
+    <div>
+      <span class="eyebrow">ENROLLMENT MANAGEMENT</span>
+      <h2>Cancellation Requests</h2>
+      <p>Review and manage student course cancellation requests.</p>
+    </div>
+
+    <div class="header-icon">↻</div>
+  </div>
+
+  <div class="summary-card">
+    <div class="summary-icon">📋</div>
+    <div>
+      <span>Total Cancellation Requests</span>
+      <h3>{{ totalRecords() }}</h3>
+    </div>
+  </div>
+
+  @if (successMessage()) {
+    <div class="alert-message success-message">
+      {{ successMessage() }}
+    </div>
+  }
+
+  <div class="filter-card">
+    <div class="filter-heading">
+      <h3>Search & Filter Requests</h3>
+      <p>Find requests by student, course, status or request date.</p>
+    </div>
+
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <div class="filter-grid">
+        <div class="filter-field">
+          <label for="requestSearch">Student Name or Email</label>
+          <input
+            id="requestSearch"
+            type="text"
+            formControlName="search"
+            placeholder="Search student"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="requestCourseId">Course ID</label>
+          <input
+            id="requestCourseId"
+            type="number"
+            min="1"
+            formControlName="courseId"
+            placeholder="Enter course ID"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="requestStatus">Request Status</label>
+          <select id="requestStatus" formControlName="status">
+            <option value="all">All Statuses</option>
+            <option value="0">Pending</option>
+            <option value="1">Approved</option>
+            <option value="2">Rejected</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="requestFromDate">From Date</label>
+          <input
+            id="requestFromDate"
+            type="date"
+            formControlName="fromDate"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="requestToDate">To Date</label>
+          <input
+            id="requestToDate"
+            type="date"
+            formControlName="toDate"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label for="requestSortOrder">Sort Order</label>
+          <select id="requestSortOrder" formControlName="sortOrder">
+            <option value="desc">Newest First</option>
+            <option value="asc">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="btn-apply">
+          Apply Filters
+        </button>
+
+        <button
+          type="button"
+          class="btn-reset"
+          (click)="resetFilters()"
+        >
+          Reset
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-container">
+    @if (isLoading()) {
+      <div class="state-message">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading cancellation requests...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-message">
+        <p>{{ errorMessage() }}</p>
+        <button type="button" (click)="loadRequests()">Try Again</button>
+      </div>
+    } @else {
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Course</th>
+              <th>Requested On</th>
+              <th>Reason</th>
+              <th>Status</th>
+              <th>Admin Remarks</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (request of requests(); track request.cancellationRequestId) {
+              <tr>
+                <td>
+                  <div class="student-info">
+                    <div class="student-avatar">
+                      {{ request.studentName.charAt(0).toUpperCase() }}
+                    </div>
+
+                    <div>
+                      <strong>{{ request.studentName }}</strong>
+                      <small>{{ request.studentEmail }}</small>
+                      <small>Request #{{ request.cancellationRequestId }}</small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <strong>{{ request.courseName }}</strong>
+                  <small>Enrollment #{{ request.enrollmentId }}</small>
+                </td>
+
+                <td>
+                  {{ request.requestedAt | date: 'dd MMM yyyy' }}
+                </td>
+
+                <td>
+                  <div class="reason-text" [title]="request.reason">
+                    {{ request.reason }}
+                  </div>
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.pending]="request.status === 0"
+                    [class.approved]="request.status === 1"
+                    [class.rejected]="request.status === 2"
+                  >
+                    {{ statusLabel(request.status) }}
+                  </span>
+
+                  @if (request.reviewedAt) {
+                    <small class="review-date">
+                      Reviewed {{ request.reviewedAt | date: 'dd MMM yyyy' }}
+                    </small>
+                  }
+                </td>
+
+                <td>
+                  {{ request.adminRemarks || '—' }}
+                </td>
+
+                <td>
+                  @if (request.status === 0) {
+                    <div class="action-buttons">
+                      <button
+                        type="button"
+                        class="btn-approve"
+                        (click)="openReview(request.cancellationRequestId, 'approve')"
+                      >
+                        Approve
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn-reject"
+                        (click)="openReview(request.cancellationRequestId, 'reject')"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  } @else {
+                    <span class="completed-label">Reviewed</span>
+                  }
+                </td>
+              </tr>
+
+              @if (selectedRequestId() === request.cancellationRequestId) {
+                <tr class="review-row">
+                  <td colspan="7">
+                    <div class="review-panel">
+                      <h3>
+                        {{
+                          reviewAction() === 'approve'
+                            ? 'Approve Cancellation Request'
+                            : 'Reject Cancellation Request'
+                        }}
+                      </h3>
+
+                      <p>
+                        Request #{{ request.cancellationRequestId }}
+                        — {{ request.studentName }} /
+                        {{ request.courseName }}
+                      </p>
+
+                      <label
+                        [for]="'remarks-' + request.cancellationRequestId"
+                      >
+                        Admin Remarks (optional)
+                      </label>
+
+                      <textarea
+                        [id]="'remarks-' + request.cancellationRequestId"
+                        rows="3"
+                        maxlength="1000"
+                        [value]="adminRemarks()"
+                        (input)="adminRemarks.set($any($event.target).value)"
+                        placeholder="Enter remarks for the student..."
+                      ></textarea>
+
+                      <div class="character-count">
+                        {{ adminRemarks().length }} / 1000
+                      </div>
+
+                      @if (reviewError()) {
+                        <p class="review-error">{{ reviewError() }}</p>
+                      }
+
+                      <div class="review-actions">
+                        <button
+                          type="button"
+                          [class.confirm-approve]="reviewAction() === 'approve'"
+                          [class.confirm-reject]="reviewAction() === 'reject'"
+                          [disabled]="isReviewing()"
+                          (click)="submitReview(request.cancellationRequestId)"
+                        >
+                          {{
+                            isReviewing()
+                              ? 'Processing...'
+                              : reviewAction() === 'approve'
+                                ? 'Confirm Approval'
+                                : 'Confirm Rejection'
+                          }}
+                        </button>
+
+                        <button
+                          type="button"
+                          class="btn-cancel"
+                          [disabled]="isReviewing()"
+                          (click)="closeReview()"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-state">
+                  <div class="empty-icon">📭</div>
+                  <strong>No cancellation requests found</strong>
+                  <p>Try changing or resetting your filters.</p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalRecords() > 0) {
+        <div class="pagination-container">
+          <span>
+            Showing {{ requests().length }} of
+            {{ totalRecords() }} requests
+          </span>
+
+          <div class="pagination-actions">
+            <button
+              type="button"
+              (click)="previousPage()"
+              [disabled]="pageNumber() === 1"
+            >
+              Previous
+            </button>
+
+            <span>
+              {{ pageNumber() }} / {{ totalPages() }}
+            </span>
+
+            <button
+              type="button"
+              (click)="nextPage()"
+              [disabled]="pageNumber() >= totalPages()"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
