@@ -1,9 +1,12 @@
+
 <div class="enrollment-page">
+
   <!-- Page Header -->
   <div class="page-header">
     <div>
-      <h2>Enrollment Management</h2>
-      <p>Monitor and manage student course enrollments.</p>
+      <span class="eyebrow">ENROLLMENT MANAGEMENT</span>
+      <h2>Enrollments</h2>
+      <p>Monitor student course enrollments and their status.</p>
     </div>
 
     <div class="header-icon">
@@ -22,25 +25,120 @@
     </div>
   </div>
 
-  <!-- Loading -->
-  @if (isLoading()) {
-    <div class="state-message">
-      <div class="spinner-border text-primary"></div>
-      <p>Loading enrollments...</p>
+  <!-- Search and Filters -->
+  <div class="filter-card">
+    <div class="filter-heading">
+      <h3>Search & Filter Enrollments</h3>
+      <p>Find enrollments using the options below.</p>
     </div>
-  }
 
-  <!-- Error -->
-  @if (errorMessage()) {
-    <div class="alert alert-danger">
-      {{ errorMessage() }}
-      <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadEnrollments()">Retry</button>
-    </div>
-  }
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+
+      <div class="filter-grid">
+
+        <div class="filter-field">
+          <label for="enrollmentSearch">Student Name or Email</label>
+          <input
+            id="enrollmentSearch"
+            type="text"
+            formControlName="search"
+            placeholder="Search student">
+        </div>
+
+        <div class="filter-field">
+          <label for="courseId">Course ID</label>
+          <input
+            id="courseId"
+            type="number"
+            min="1"
+            formControlName="courseId"
+            placeholder="Enter course ID">
+        </div>
+
+        <div class="filter-field">
+          <label for="enrollmentStatus">Enrollment Status</label>
+          <select id="enrollmentStatus" formControlName="status">
+            <option value="all">All Statuses</option>
+            <option value="0">Active</option>
+            <option value="1">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="fromDate">From Date</label>
+          <input
+            id="fromDate"
+            type="date"
+            formControlName="fromDate">
+        </div>
+
+        <div class="filter-field">
+          <label for="toDate">To Date</label>
+          <input
+            id="toDate"
+            type="date"
+            formControlName="toDate">
+        </div>
+
+        <div class="filter-field">
+          <label for="sortBy">Sort By</label>
+          <select id="sortBy" formControlName="sortBy">
+            <option value="date">Enrollment Date</option>
+            <option value="student">Student Name</option>
+            <option value="course">Course Name</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="sortOrder">Sort Order</label>
+          <select id="sortOrder" formControlName="sortOrder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="btn-apply">
+          Apply Filters
+        </button>
+
+        <button
+          type="button"
+          class="btn-reset"
+          (click)="resetFilters()">
+          Reset
+        </button>
+      </div>
+
+    </form>
+  </div>
 
   <!-- Enrollment Table -->
-  @if (!isLoading() && !errorMessage()) {
-    <div class="table-container">
+  <div class="table-container">
+
+    @if (isLoading()) {
+      <div class="state-message">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading enrollments...</p>
+      </div>
+    }
+
+    @else if (errorMessage()) {
+      <div class="alert alert-danger">
+        {{ errorMessage() }}
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-danger ms-2"
+          (click)="loadEnrollments()">
+          Retry
+        </button>
+      </div>
+    }
+
+    @else {
+
       <table class="table align-middle">
         <thead>
           <tr>
@@ -75,7 +173,9 @@
                 <span class="course-name">
                   {{ enrollment.courseName }}
                 </span>
-                <small class="course-id"> Course #{{ enrollment.courseId }} </small>
+                <small class="course-id">
+                  Course #{{ enrollment.courseId }}
+                </small>
               </td>
 
               <td>
@@ -85,49 +185,55 @@
               <td>
                 <span
                   class="status-badge"
-                  [class.active]="enrollment.status === 1"
-                  [class.inactive]="enrollment.status !== 1"
-                >
-                  {{ enrollment.status === 1 ? 'Active' : 'Cancelled' }}
+                  [class.active]="enrollment.status === 0"
+                  [class.inactive]="enrollment.status === 1">
+                  {{ statusLabel(enrollment.status) }}
                 </span>
               </td>
             </tr>
-
           } @empty {
             <tr>
               <td colspan="4" class="empty-state">
                 <i class="bi bi-inbox"></i>
                 <p>No enrollments found.</p>
+                <small>Try changing or resetting your filters.</small>
               </td>
             </tr>
           }
         </tbody>
       </table>
-    </div>
 
-    <!-- Pagination -->
-    <div class="pagination-container">
-      <span> Showing {{ enrollments().length }} of {{ totalRecords() }} enrollments </span>
+      <!-- Pagination -->
+      @if (totalRecords() > 0) {
+        <div class="pagination-container">
+          <span>
+            Showing {{ enrollments().length }} of
+            {{ totalRecords() }} enrollments
+          </span>
 
-      <div class="pagination-actions">
-        <button
-          class="btn btn-outline-secondary"
-          [disabled]="pageNumber() === 1"
-          (click)="previousPage()"
-        >
-          Previous
-        </button>
+          <div class="pagination-actions">
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="previousPage()"
+              [disabled]="pageNumber() === 1">
+              Previous
+            </button>
 
-        <span> Page {{ pageNumber() }} of {{ totalPages() }} </span>
+            <span>
+              Page {{ pageNumber() }} of {{ totalPages() }}
+            </span>
 
-        <button
-          class="btn btn-outline-secondary"
-          [disabled]="pageNumber() >= totalPages()"
-          (click)="nextPage()"
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  }
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="nextPage()"
+              [disabled]="pageNumber() >= totalPages()">
+              Next
+            </button>
+          </div>
+        </div>
+      }
+    }
+  </div>
 </div>

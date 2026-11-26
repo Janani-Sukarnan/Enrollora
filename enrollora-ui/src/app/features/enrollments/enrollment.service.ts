@@ -95,6 +95,13 @@ export class EnrollmentService {
     if (filters?.toDate) {
       params = params.set('toDate', filters.toDate);
     }
+    if (filters?.sortBy) {
+  params = params.set('sortBy', filters.sortBy);
+}
+
+if (filters?.sortOrder) {
+  params = params.set('sortOrder', filters.sortOrder);
+}
 
     return params;
   }

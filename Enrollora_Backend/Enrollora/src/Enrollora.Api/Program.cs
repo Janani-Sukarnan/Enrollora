@@ -99,4 +99,4 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 await DbSeeder.SeedAsync(app.Services, app.Configuration);
-app.Run();
+http://localhost:5000/api/studentsapp.Run();
